@@ -1,12 +1,32 @@
 package com.employee.employee.EmployeeModel;
 
-public class Employee {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "Employees")
+public class Employee {
+	
+	@Id
+	@Column(name = "Id")
     private String empNo;
+	
+	@Column(name = "Name")
     private String empName;
+	
+	@Column(name = "Position")
     private String position;
 
-    public Employee() {
+    @Override
+	public String toString() {
+		return "Employee [empNo=" + empNo + ", empName=" + empName + ", position=" + position + "]";
+	}
+
+	public Employee() {
 
     }
 

@@ -1,9 +1,11 @@
 package com.employee.employee.employeeController;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,84 +13,49 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.employee.employee.EmployeeDao.EmployeeDao;
 import com.employee.employee.EmployeeModel.Employee;
+import com.employee.employee.EmployeeRepository.EmployeeRepository;
 
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
-
 public class employeeController {
 
-    @Autowired
-    private EmployeeDao employeeDAO;
+	@Autowired
+	private EmployeeRepository employeeDAO;
 
-    @RequestMapping("/")
-    @ResponseBody
-    public String welcome() {
-        return "Welcome to RestTemplate Example.";
-    }
+	@RequestMapping(value = "/employees", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Employee> getEmployees() {
+		List<Employee> list = employeeDAO.findAll();
+		return list;
+	}
 
-    // URL:
-    // http://localhost:8080/SomeContextPath/employees
-    @RequestMapping(value = "/employees", //
-            method = RequestMethod.GET, //
-            produces = { MediaType.APPLICATION_JSON_VALUE, //
-                    MediaType.APPLICATION_XML_VALUE })
-    @ResponseBody
-    public List<Employee> getEmployees() {
-        List<Employee> list = employeeDAO.getAllEmployees();
-        return list;
-    }
+	@RequestMapping(value = "/employee/{empNo}", method = RequestMethod.GET)
+	@ResponseBody
+	public Employee getEmployee(@PathVariable("empNo") String empNo) {
 
-    // URL:
-    // http://localhost:8080/SomeContextPath/employee/{empNo}
-    @RequestMapping(value = "/employee/{empNo}", //
-            method = RequestMethod.GET, //
-            produces = { MediaType.APPLICATION_JSON_VALUE, //
-                    MediaType.APPLICATION_XML_VALUE })
-    @ResponseBody
-    public Employee getEmployee(@PathVariable("empNo") String empNo) {
-        return employeeDAO.getEmployee(empNo);
-    }
+		return employeeDAO.getById(empNo);
+	}
 
-    // URL:
-    // http://localhost:8080/SomeContextPath/employee
-    @RequestMapping(value = "/employee", //
-            method = RequestMethod.POST, //
-            produces = { MediaType.APPLICATION_JSON_VALUE, //
-                    MediaType.APPLICATION_XML_VALUE })
-    @ResponseBody
-    public Employee addEmployee(@RequestBody Employee emp) {
+	@RequestMapping(value = "/employee", method = RequestMethod.POST)
+	@ResponseBody
+	public Employee addEmployee(@RequestBody Employee emp) {
 
-        System.out.println("(Service Side) Creating employee: " + emp.getEmpNo());
+		return employeeDAO.save(emp);
+	}
 
-        return employeeDAO.addEmployee(emp);
-    }
+	@RequestMapping(value = "/employee", method = RequestMethod.PUT)
+	@ResponseBody
+	public Employee updateEmployee(@RequestBody Employee emp) {
 
-    // URL:
-    // http://localhost:8080/SomeContextPath/employee
-    @RequestMapping(value = "/employee", //
-            method = RequestMethod.PUT, //
-            produces = { MediaType.APPLICATION_JSON_VALUE, //
-                    MediaType.APPLICATION_XML_VALUE })
-    @ResponseBody
-    public Employee updateEmployee(@RequestBody Employee emp) {
+		return employeeDAO.save(emp);
+	}
 
-        System.out.println("(Service Side) Editing employee: " + emp.getEmpNo());
+	@RequestMapping(value = "/employee/{empNo}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public void deleteEmployee(@PathVariable("empNo") String empNo) {
 
-        return employeeDAO.updateEmployee(emp);
-    }
-
-    // URL:
-    // http://localhost:8080/SomeContextPath/employee/{empNo}
-    @RequestMapping(value = "/employee/{empNo}", //
-            method = RequestMethod.DELETE, //
-            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    @ResponseBody
-    public void deleteEmployee(@PathVariable("empNo") String empNo) {
-
-        System.out.println("(Service Side) Deleting employee: " + empNo);
-
-        employeeDAO.deleteEmployee(empNo);
-    }
+		employeeDAO.deleteById(empNo);
+	}
 
 }
